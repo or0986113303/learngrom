@@ -31,12 +31,13 @@ func main() {
 	// Migrate the schema
 	db.AutoMigrate(&Product{})
 
-	// Create
-	db.Create(&Product{Name: "MirChen", Number: 16701})
+	// Create//.Find(&users)
+	//db.Create(&Product{Name: "MirChen", Number: 16701})
 
 	// Read
 	var product Product
-	db.First(&product, "Name = ?", "MirChen") // find product with code D42
+	result := db.Find(&product) // find product with code D42
+	log.Info(result)
 
 	log.Info(product.Name)
 	log.Info(product.Number)
