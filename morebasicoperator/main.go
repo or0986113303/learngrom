@@ -22,6 +22,21 @@ func init() {
 
 func main() {
 	dbh = control.GetEngine()
-	res := dbh.Select(16701)
-	log.Info(res)
+
+	src := model.User{Name: "Mir", Number: 16704}
+
+	res := dbh.Insert(src)
+	log.Info(res) // there should to get output which number is 16701 and name is Mir
+
+	res = dbh.SelectCondition("Number", 16702)
+	log.Info(res) // there should to get output which number is 16701
+
+	dbh.OmitName(src)
+
+	res = dbh.SelectConditionFirst("Name", "Mir")
+	log.Info(res) // there should to get output which number is 16701
+
+	res = dbh.SelectConditionLast("Name", "Mir")
+	log.Info(res) // there should to get output which number is 16701
+
 }
