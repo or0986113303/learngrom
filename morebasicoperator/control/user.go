@@ -47,7 +47,26 @@ func (USR *ORMEngine) Insert(src model.User) (res model.User) {
 	return
 }
 
-func (USR *ORMEngine) Select(Name string, value interface{}) (res model.User) {
+func (USR *ORMEngine) SelectConditionLast(Name string, value interface{}) (res model.User) {
+
+	cond := Name + " = ?"
+	r := reflect.ValueOf(&res)
+	switch reflect.Indirect(r).FieldByName(Name).Type().String() {
+	case "uint":
+		if err := USR.Where(cond, value.(int)).Last(&res).Error; err != nil {
+			log.Panic(err)
+		}
+	case "string":
+		if err := USR.Where(cond, value.(string)).Last(&res).Error; err != nil {
+			log.Panic(err)
+		}
+	default:
+		log.Panic("gg")
+	}
+	return
+}
+
+func (USR *ORMEngine) SelectConditionFirst(Name string, value interface{}) (res model.User) {
 
 	cond := Name + " = ?"
 	r := reflect.ValueOf(&res)
@@ -58,6 +77,25 @@ func (USR *ORMEngine) Select(Name string, value interface{}) (res model.User) {
 		}
 	case "string":
 		if err := USR.Where(cond, value.(string)).First(&res).Error; err != nil {
+			log.Panic(err)
+		}
+	default:
+		log.Panic("gg")
+	}
+	return
+}
+
+func (USR *ORMEngine) SelectCondition(Name string, value interface{}) (res model.User) {
+
+	cond := Name + " = ?"
+	r := reflect.ValueOf(&res)
+	switch reflect.Indirect(r).FieldByName(Name).Type().String() {
+	case "uint":
+		if err := USR.Where(cond, value.(int)).Find(&res).Error; err != nil {
+			log.Panic(err)
+		}
+	case "string":
+		if err := USR.Where(cond, value.(string)).Find(&res).Error; err != nil {
 			log.Panic(err)
 		}
 	default:
