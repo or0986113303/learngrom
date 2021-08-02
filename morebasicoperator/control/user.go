@@ -3,11 +3,16 @@ package control
 import (
 	"log"
 	"morebasicoperator/model"
+	"reflect"
 	"sync"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
+
+type ORMEngineInterface interface {
+	Select() model.User
+}
 
 type ORMEngine struct {
 	*gorm.DB
@@ -35,9 +40,49 @@ func GetEngine() *ORMEngine {
 	return ormEngine
 }
 
-func (USR *ORMEngine) Select(unmber int) (res model.User) {
-	if err := USR.Where("Number = ?", unmber).Find(&res).Error; err != nil {
-		log.Panic(err)
+func (USR *ORMEngine) Insert(src model.User) (res model.User) {
+	USR.AutoMigrate(&model.User{})
+	USR.Create(&src)
+	res = src
+	return
+}
+
+func (USR *ORMEngine) Select(Name string, value interface{}) (res model.User) {
+
+	cond := Name + " = ?"
+	r := reflect.ValueOf(&res)
+	switch reflect.Indirect(r).FieldByName(Name).Type().String() {
+	case "uint":
+		if err := USR.Where(cond, value.(int)).First(&res).Error; err != nil {
+			log.Panic(err)
+		}
+	case "string":
+		if err := USR.Where(cond, value.(string)).First(&res).Error; err != nil {
+			log.Panic(err)
+		}
+	default:
+		log.Panic("gg")
 	}
+	return
+}
+
+func (USR *ORMEngine) OmitName(schema interface{}) (res model.User) {
+
+	switch v := schema.(type) {
+	case string:
+		log.Panic(v)
+	case int32, int64:
+		log.Panic(v)
+	case model.User:
+		op, ok := schema.(model.User)
+		if ok {
+			USR.Omit("Name").Create(&op)
+		} else {
+			log.Panic("convert to other model fail")
+		}
+	default:
+		log.Panic("unknown")
+	}
+
 	return
 }
