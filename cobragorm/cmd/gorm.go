@@ -23,6 +23,8 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/tidwall/gjson"
+	"github.com/tidwall/pretty"
 )
 
 // gormCmd represents the gorm command
@@ -89,7 +91,22 @@ to quickly create a Cobra application.`,
 				res := dbh.Insert(src)
 				log.Info(res) // there should to get output which number is 16701 and name is Mir
 			} else {
-				log.Info("Wrong parameters")
+				for _, value := range args {
+					reducejson := pretty.Pretty([]byte(value))
+					if len(reducejson) > 3 {
+						src := model.User{Name: gjson.Get(value, "Name").String(), Number: uint(gjson.Get(value, "Number").Uint())}
+						res := dbh.Insert(src)
+						log.Info(res)
+					} else {
+						log.Info("Wrong parameters")
+					}
+				}
+
+				/*
+					src := model.User{Name: gjson.Get(jsonstr, "Name").String(), Number: uint(gjson.Get(jsonstr, "Number").Uint())}
+					res := dbh.Insert(src)
+					log.Info(res)
+				*/
 			}
 		},
 	}
@@ -124,6 +141,4 @@ func init() {
 
 	gormInsertCmd.Flags().StringVarP(&Name, "name", "N", "", "value of name")
 	gormInsertCmd.Flags().UintVarP(&Number, "number", "n", 0, "value of number")
-	gormInsertCmd.MarkFlagRequired("name")
-	gormInsertCmd.MarkFlagRequired("number")
 }
