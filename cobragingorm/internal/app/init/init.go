@@ -1,6 +1,10 @@
 package config
 
-import "github.com/BurntSushi/toml"
+import (
+	"cobragingorm/internal/app/config"
+
+	"github.com/BurntSushi/toml"
+)
 
 var defaultConfig = `
 debug = true # debug mode flag
@@ -19,7 +23,7 @@ maxAge = 24 # unit : hours
 `
 
 func init() {
-	_, err := toml.Decode(defaultConfig, Conf)
+	_, err := toml.Decode(defaultConfig, config.Conf)
 	if err != nil {
 		panic("default config synctax error")
 	}

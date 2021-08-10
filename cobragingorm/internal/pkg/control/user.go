@@ -2,9 +2,10 @@ package control
 
 import (
 	"cobragingorm/internal/pkg/model"
-	"log"
 	"reflect"
 	"sync"
+
+	"github.com/sirupsen/logrus"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -21,6 +22,7 @@ type ORMEngine struct {
 var (
 	ormEngine *ORMEngine
 	ormOnce   sync.Once
+	log       = logrus.New()
 )
 
 func NewEngine() {
