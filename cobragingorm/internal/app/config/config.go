@@ -1,9 +1,5 @@
 package config
 
-import (
-	"github.com/go-eyas/toolkit/log"
-)
-
 type Config struct {
 	// running mode
 	Debug bool `env:"API_DEBUG"`
@@ -24,9 +20,6 @@ type Config struct {
 		Credentials bool
 		MaxAge      int
 	}
-
-	// log config
-	Log log.LogConfig
 }
 
 // Conf of global variable
